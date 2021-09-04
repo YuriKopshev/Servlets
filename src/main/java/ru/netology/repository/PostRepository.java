@@ -1,56 +1,40 @@
 package ru.netology.repository;
 
-import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
+import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
-// Stub
+
 public class PostRepository {
-    private final CopyOnWriteArrayList<Post> postList = new CopyOnWriteArrayList<>();
-    private int id = 1;
+    private final ConcurrentHashMap<Long, Post> postMap = new ConcurrentHashMap<Long, Post>();
+    private final AtomicLong id = new AtomicLong();
 
 
-    public CopyOnWriteArrayList<Post> all() {
-        return postList;
+    public Collection<Post> all() {
+        return postMap.values();
     }
 
     public Optional<Post> getById(long id) {
-        Post result = null;
-        for (Post post : postList) {
-            if (post.getId() == id) {
-                result = post;
-            }
-        }
-        if (result == null) throw new AssertionError();
-        return Optional.of(result);
+        return Optional.of(postMap.get(id));
     }
 
     public Post save(Post post) {
-        long currentId = post.getId();
         if (post.getId() == 0) {
-            postList.add(new Post(id, post.getContent()));
-            id++;
+            long i = id.incrementAndGet();
+            postMap.put(i, new Post(i, post.getContent()));
 
-        }
-        if (post.getId() != 0) {
-            boolean check = false;
-            for (Post variable : postList) {
-                if (variable.getId() == currentId) {
-                    variable.setId(currentId);
-                    variable.setContent(post.getContent());
-                    check = true;
-                }
-            }
-            if (!check) {
-                postList.add(new Post(post.getId(), post.getContent()));
-            }
+        } else if (post.getId() != 0) {
+            Long currentId = post.getId();
+            postMap.put(currentId, new Post(post.getId(), post.getContent()));
+            id.incrementAndGet();
         }
         return post;
     }
 
     public void removeById(long id) {
-        postList.removeIf(post -> post.getId() == id);
+        postMap.remove(id);
     }
 }

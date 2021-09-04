@@ -1,7 +1,7 @@
-DELETE http://localhost:8080/api/posts/1
-Accept: application/json
+GET http://localhost:8080/api/posts/1
 
 ###
+
 
 
 ###
@@ -13,8 +13,10 @@ POST http://localhost:8080/api/posts
 Content-Type: application/json
 
 {
-  "id": 1,
-  "content": "My First POST"
+  "id": 3,
+  "content": "My First Post"
 }
+
+
 
 
