@@ -34,7 +34,7 @@ public class MainServlet extends HttpServlet {
                 controller.all(resp);
             } else if (method.equals(GET) && path.matches(PATH + "/\\d+")) {
                 // easy way
-                final var id = Long.parseLong(path.substring(path.lastIndexOf("/")));
+                final var id = Long.parseLong(path.substring(path.lastIndexOf("/")+1));
                 controller.getById(id, resp);
             } else {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -67,7 +67,7 @@ public class MainServlet extends HttpServlet {
             final var path = req.getRequestURI();
             final var method = req.getMethod();
             if (method.equals(DELETE) && path.matches(PATH + "/\\d+")) {
-                final var id = Long.parseLong(path.substring(path.lastIndexOf("/")));
+                final var id = Long.parseLong(path.substring(path.lastIndexOf("/")+1));
                 controller.removeById(id, resp);
             } else {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
