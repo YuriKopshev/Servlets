@@ -1,5 +1,7 @@
 package ru.netology.servlet;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.netology.config.JavaConfig;
 import ru.netology.controller.PostController;
 import ru.netology.repository.PostRepository;
 import ru.netology.service.PostService;
@@ -20,9 +22,11 @@ public class MainServlet extends HttpServlet {
 
     @Override
     public void init() {
-        final var repository = new PostRepository();
-        final var service = new PostService(repository);
-        controller = new PostController(service);
+        //final var context = new AnnotationConfigApplicationContext("ru.netology");
+        final var context = new AnnotationConfigApplicationContext(JavaConfig.class);
+        controller = (PostController) context.getBean("postController");
+        final var service = context.getBean(PostService.class);
+
     }
 
     @Override
@@ -34,7 +38,7 @@ public class MainServlet extends HttpServlet {
                 controller.all(resp);
             } else if (method.equals(GET) && path.matches(PATH + "/\\d+")) {
                 // easy way
-                final var id = Long.parseLong(path.substring(path.lastIndexOf("/")+1));
+                final var id = Long.parseLong(path.substring(path.lastIndexOf("/") + 1));
                 controller.getById(id, resp);
             } else {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -67,7 +71,7 @@ public class MainServlet extends HttpServlet {
             final var path = req.getRequestURI();
             final var method = req.getMethod();
             if (method.equals(DELETE) && path.matches(PATH + "/\\d+")) {
-                final var id = Long.parseLong(path.substring(path.lastIndexOf("/")+1));
+                final var id = Long.parseLong(path.substring(path.lastIndexOf("/") + 1));
                 controller.removeById(id, resp);
             } else {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
